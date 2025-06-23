@@ -7,11 +7,20 @@ import { linkFilterMiddleware } from "./linkFilterMiddleware";
 import { loggerMiddleware } from "./loggerMiddleware";
 import { wordFilterMiddleware } from "./wordFilterMiddleware";
 import { BotContext } from "../types";
+import { cacheUser } from "../utils/commandUtils";
 
 /**
  * Apply all middleware to the bot
  */
 export function applyMiddleware(bot: Bot<BotContext>): void {
+  // User caching middleware (must be first)
+  bot.use(async (ctx, next) => {
+    if (ctx.chat && ctx.from) {
+      cacheUser(ctx.chat.id, ctx.from);
+    }
+    await next();
+  });
+
   // Apply admin middleware
   bot.use(adminMiddleware);
   
