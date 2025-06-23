@@ -1,0 +1,119 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🤖 Telegram Group Management Bot – Feature List
+
+A powerful moderation and management bot built with @grammY and TypeScript, designed to keep your Telegram group safe, organized, and engaging.
+
+---
+
+## 🔧 Core Moderation Features
+
+- **/ban** – Ban a user from the group.
+- **/kick** – Kick and unban a user (can rejoin).
+- **/mute [duration]** – Temporarily mute a user (e.g. `/mute 10m`).
+- **/unmute** – Remove mute from a user.
+- **/warn** – Give a warning to a user.
+- **/unwarn** – Remove one or all warnings.
+- **/warns** – Check a user's warning count.
+- **Slowmode** – Limit how often users can send messages.
+- **/cleanup [n]** – Delete the last `n` messages quickly.
+- **Admin-Only Commands** – Only admins can run sensitive commands.
+
+---
+
+## 🚨 Anti-Spam & Security Features
+
+- **Flood Control** – Auto-warn or mute spammy users.
+- **Link Blocking** – Auto-delete messages containing links.
+- **Invite Link Blocking** – Auto-delete Telegram group invites.
+- **Media Filter** – Block specific media types (GIFs, stickers, etc.).
+- **Custom Word Filter** – Delete messages with blacklisted words.
+- **Language Filter** – Block messages in certain scripts (e.g. Cyrillic).
+- **Verification System** – Captcha for new users before they can chat.
+- **Raid Detection** – Detect and mitigate mass-join attacks.
+
+---
+
+## 👥 User & Group Interaction Features
+
+- **Welcome Messages** – Custom welcome text with buttons or rules.
+- **Goodbye Messages** – Optional farewell messages when users leave.
+- **Auto-Delete Join/Leave Messages** – Clean up automatically.
+- **/rules** – Display the group's rules.
+- **/setrules** – Admins can set or edit group rules.
+- **/pin** – Pin messages with the bot.
+- **Auto-Delete Pin Notification** – Remove system message after pin.
+
+---
+
+## 📈 Logging & Stats Features
+
+- **Modlog** – Log bans, deletes, edits, joins, and leaves.
+- **Join/Leave Logs** – Track who joins and leaves.
+- **/groupinfo** – View group stats (users, messages, etc.).
+- **/userinfo** – Show info about a specific user.
+- **/top** – Leaderboard of top chatters.
+- **Daily Stats** – Track mutes, bans, messages per day.
+
+---
+
+## ⚙️ Advanced Admin Features
+
+- **Custom Roles** – Tag users as "mods", "trusted", etc.
+- **Temporary Roles** – Auto-remove role after time expires.
+- **Scheduled Actions** – Queue mutes, kicks, or unbans for later.
+- **Per-Group Settings** – All per-group settings and rules are stored in the database (MongoDB).
+- **Custom Commands** – Let admins define their own commands.
+- **Anonymous Reports** – Allow private /report messages to admins.
+
+---
+
+## 🎉 Optional & Fun Features
+
+- **/afk** – Set AFK status, bot auto-replies when you're mentioned.
+- **/back** – Mark yourself as back.
+- **/rep @user** – Give reputation points to users.
+- **Reputation Leaderboard** – View top users by rep.
+- **/poll** – Quickly create a Telegram poll.
+- **/remindme** – Set personal reminders (e.g. `/remindme 10m Take break`).
+- **Birthday System** – Users set birthdays, bot congratulates them.
+- **Keyword Auto-Replies** – Custom reactions to words or phrases.
+- **/ping** – Bot uptime and performance stats.
+- **Auto-Translate** – Translate messages into preferred language.
+
+---
+
+## 🧠 AI & Smart Features (Optional)
+
+- **Smart FAQ** – Auto-reply to common questions with AI/matching.
+- **Chat Summarizer** – Summarize weekly or daily conversations.
+- **Toxicity Detection** – Flag or remove toxic comments.
+- **Auto Tagging** – Auto-tag users by activity or keywords.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Language:** TypeScript
+- **Bot Framework:** @grammY
+- **Package Manager:** pnpm
+- **Database:** MongoDB with Mongoose (all persistent features and settings are stored in the database)
+- **Hosting:** Suitable for Vercel, Railway, Fly.io, Heroku, VPS, etc.
+
+---
+
+## 📌 Notes
+
+- Modular command structure for scalability.
+- **All persistent features (warnings, group settings, reputation, reports, roles, reminders, etc.) are stored in the database.**
+- Per-group settings and user/group data are always loaded from and saved to MongoDB.
+- Logs can be sent to private admin group/channel.
+- All features are toggleable per group.
+
+---
+
+> Contributions welcome! Fork this repo and start building.
+
