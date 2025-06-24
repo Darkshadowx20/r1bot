@@ -7,6 +7,8 @@ export interface IReport extends Document {
   message: string;
   timestamp: Date;
   status: "pending" | "resolved" | "dismissed";
+  reportedMessageId?: number;
+  reportedMessageLink?: string;
 }
 
 const ReportSchema: Schema = new Schema<IReport>({
@@ -16,6 +18,8 @@ const ReportSchema: Schema = new Schema<IReport>({
   message: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
   status: { type: String, enum: ["pending", "resolved", "dismissed"], default: "pending" },
+  reportedMessageId: { type: Number },
+  reportedMessageLink: { type: String },
 });
 
 export const Report: Model<IReport> = mongoose.model<IReport>("Report", ReportSchema); 

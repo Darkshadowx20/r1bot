@@ -6,7 +6,7 @@ import { rulesCommand } from "./rulesCommand";
 import { groupinfoCommand } from "./groupinfoCommand";
 import { userinfoCommand } from "./userinfoCommand";
 import { pingCommand } from "./pingCommand";
-import { reportCommand } from "./reportCommand";
+import { reportCommand, getReports, resolveReport, setReportChannel } from "./reportCommand";
 
 export function registerUserCommands(bot: Bot<BotContext>): void {
   // Basic commands
@@ -21,4 +21,7 @@ export function registerUserCommands(bot: Bot<BotContext>): void {
   // Utility commands
   bot.command("ping", pingCommand);
   bot.command("report", reportCommand);
+  bot.command("reports", getReports);
+  bot.command("resolve", resolveReport);
+  bot.command("setreportchannel", setReportChannel);
 } 
