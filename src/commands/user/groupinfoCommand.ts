@@ -20,55 +20,47 @@ export async function groupinfoCommand(ctx: BotContext): Promise<void> {
     // Get member count
     const memberCount = await ctx.getChatMembersCount();
     
-    // Get chat photo if available
-    let photoUrl = "";
-    if (chat.photo?.big_file_id) {
-      try {
-        const photoFile = await ctx.api.getFile(chat.photo.big_file_id);
-        if (photoFile.file_path) {
-          photoUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${photoFile.file_path}`;
-        }
-      } catch (error) {
-        console.error("Error getting chat photo:", error);
-      }
+    // Get admin count
+    let adminCount = 0;
+    try {
+      const admins = await ctx.getChatAdministrators();
+      adminCount = admins.length;
+    } catch (error) {
+      console.error("Error getting admin count:", error);
     }
     
-    // Format creation date if available
-    let creationDate = "Unknown";
-    // if (chat.type === "supergroup" && chat.date) {
-    //   creationDate = new Date(chat.date * 1000).toLocaleDateString();
-    // }
-    
-    // Build the group info message
+    // Build the group info message with improved UI
     let infoText = `
-<b>ℹ️ Group Information</b>
+<b>📊 GROUP INFORMATION</b>
 
-<b>Name:</b> ${chat.title || "Unknown"}
-<b>Type:</b> ${chat.type}
-<b>ID:</b> ${chat.id}
-<b>Members:</b> ${memberCount}
-<b>Created:</b> ${creationDate}
+<b>📝 Basic Details</b>
+• <b>Name:</b> ${chat.title || "Unknown"}
+• <b>Type:</b> ${chat.type === "supergroup" ? "Supergroup" : chat.type === "group" ? "Basic Group" : chat.type}
+• <b>ID:</b> <code>${chat.id}</code>
+
+<b>👥 Members</b>
+• <b>Total:</b> ${memberCount} members
+• <b>Admins:</b> ${adminCount} administrators
 `;
 
     if (chat.description) {
-      infoText += `\n<b>Description:</b> ${chat.description}`;
+      infoText += `
+<b>📄 Description</b>
+${chat.description}`;
     }
     
-    if (chat.invite_link) {
-      infoText += `\n<b>Invite Link:</b> ${chat.invite_link}`;
+    // Add group username if available
+    if (chat.username) {
+      infoText += `
+
+<b>🌐 Public Link</b>
+https://t.me/${chat.username}`;
     }
     
-    // Send the info message
-    if (photoUrl) {
-      await ctx.replyWithPhoto(photoUrl, {
-        caption: infoText,
-        parse_mode: "HTML"
-      });
-    } else {
-      await ctx.reply(infoText, {
-        parse_mode: "HTML"
-      });
-    }
+    // Send text-only response with improved formatting
+    await ctx.reply(infoText, {
+      parse_mode: "HTML"
+    });
     
   } catch (error) {
     console.error("Error getting group info:", error);
