@@ -5,6 +5,7 @@ import { backCommand } from "./backCommand";
 import { repCommand, getReputation } from "./repCommand";
 import { pollCommand } from "./pollCommand";
 import { remindmeCommand } from "./remindmeCommand";
+import { topCommand } from "./topCommand";
 
 export function registerFunCommands(bot: Bot<BotContext>): void {
   // AFK commands
@@ -14,6 +15,9 @@ export function registerFunCommands(bot: Bot<BotContext>): void {
   // Reputation commands
   bot.command("rep", repCommand);
   bot.command("rep_check", getReputation);
+  
+  // Reputation leaderboard
+  bot.command("top", topCommand);
   
   // Poll command
   bot.command("poll", pollCommand);
