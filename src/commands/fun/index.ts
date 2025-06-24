@@ -2,7 +2,7 @@ import { Bot } from "grammy";
 import { BotContext } from "../../types";
 import { afkCommand } from "./afkCommand";
 import { backCommand } from "./backCommand";
-import { repCommand } from "./repCommand";
+import { repCommand, getReputation } from "./repCommand";
 import { pollCommand } from "./pollCommand";
 import { remindmeCommand } from "./remindmeCommand";
 
@@ -11,8 +11,9 @@ export function registerFunCommands(bot: Bot<BotContext>): void {
   bot.command("afk", afkCommand);
   bot.command("back", backCommand);
   
-  // Reputation command
+  // Reputation commands
   bot.command("rep", repCommand);
+  bot.command("rep_check", getReputation);
   
   // Poll command
   bot.command("poll", pollCommand);

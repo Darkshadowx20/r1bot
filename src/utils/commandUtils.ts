@@ -19,6 +19,18 @@ export function getCachedUser(chatId: number, username: string) {
   return userCache.get(`${chatId}:${username.toLowerCase()}`);
 }
 
+// Simple hash function to generate a numeric ID from a string
+export function hashStringToNumber(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  // Ensure it's positive and doesn't conflict with real Telegram IDs
+  return Math.abs(hash) + 1000000000;
+}
+
 /**
  * Extract a target user and reason from a command
  * Works with:
@@ -34,9 +46,19 @@ export async function extractUserAndReason(ctx: BotContext): Promise<{
   let targetUser: User | null = null;
   let reason: string | null = null;
   
+  // Cache the sender if they have a username
+  if (ctx.from && ctx.chat) {
+    cacheUser(ctx.chat.id, ctx.from);
+  }
+  
   // Check if the command is a reply to a message
   if (ctx.message?.reply_to_message?.from) {
     targetUser = ctx.message.reply_to_message.from;
+    
+    // Cache this user if they have a username
+    if (ctx.chat && targetUser.username) {
+      cacheUser(ctx.chat.id, targetUser);
+    }
     
     // Get reason from command text
     const text = ctx.message.text || "";
@@ -72,41 +94,40 @@ export async function extractUserAndReason(ctx: BotContext): Promise<{
                 const chatMember = await ctx.getChatMember(cached.id);
                 targetUser = chatMember.user;
               } catch (e) {
-                // User not in chat anymore
+                // User not in chat anymore or bot doesn't have permission
+                console.log(`Cached user ${cached.id} not accessible in chat`);
               }
             }
-            // If not found in cache, try to resolve the username to a user ID using getChat
-            if (!targetUser) {
-              let userId: number | null = null;
-              try {
-                const userChat = await ctx.api.getChat(`@${username}`);
-                if (userChat && typeof userChat.id === "number") {
-                  userId = userChat.id;
-                }
-              } catch (resolveError) {
-                // getChat will fail for non-public users
-                console.log(`Could not resolve @${username} to user ID via getChat`);
-              }
-              if (userId) {
-                try {
-                  const chatMember = await ctx.getChatMember(userId);
-                  targetUser = chatMember.user;
-                } catch (memberError) {
-                  console.log(`User ID ${userId} not found in this chat`);
-                }
-              }
-            }
+            
             // Fallback: search through chat administrators
             if (!targetUser) {
               try {
                 const chatMembers = await ctx.getChatAdministrators();
-                const foundMember = chatMembers.find((member: ChatMember) => member.user.username === username);
+                const foundMember = chatMembers.find(
+                  (member: ChatMember) => 
+                    member.user.username && 
+                    member.user.username.toLowerCase() === username.toLowerCase()
+                );
                 if (foundMember) {
                   targetUser = foundMember.user;
+                  // Cache this admin
+                  cacheUser(ctx.chat.id, foundMember.user);
                 }
               } catch (adminError) {
                 console.error("Error getting chat administrators:", adminError);
               }
+            }
+            
+            // If still not found, create a virtual user with the username
+            if (!targetUser) {
+              // Create a virtual user with a consistent ID based on username and chat
+              const virtualId = hashStringToNumber(`${username.toLowerCase()}:${ctx.chat.id}`);
+              targetUser = {
+                id: virtualId,
+                is_bot: false,
+                first_name: username,
+                username: username
+              };
             }
           }
         } catch (error) {
@@ -121,6 +142,11 @@ export async function extractUserAndReason(ctx: BotContext): Promise<{
             // Try to get user by ID
             const chatMember = await ctx.getChatMember(userId);
             targetUser = chatMember.user;
+            
+            // Cache this user if they have a username
+            if (ctx.chat && targetUser.username) {
+              cacheUser(ctx.chat.id, targetUser);
+            }
           } catch (error) {
             console.error("Error getting chat member by ID:", error);
           }

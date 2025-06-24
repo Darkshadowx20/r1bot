@@ -1,7 +1,7 @@
 import { Bot, Middleware } from "grammy";
 import { hydrate } from "@grammyjs/hydrate";
 import { conversations } from "@grammyjs/conversations";
-import { hydrateReply, parseMode } from "@grammyjs/parse-mode";
+// import { hydrateReply, parseMode } from "@grammyjs/parse-mode";
 import { connectToDatabase } from "./db/connection";
 import { registerModerationCommands } from "./commands/moderation";
 import { registerAdminCommands } from "./commands/admin";
@@ -10,6 +10,7 @@ import { registerFunCommands } from "./commands/fun";
 import { applyMiddleware } from "./middleware";
 import { BotContext } from "./types";
 import { session } from "grammy";
+import { loadRemindersFromDatabase } from "./commands/fun/remindmeCommand";
 
 // Load environment variables
 if (!process.env.BOT_TOKEN) {
@@ -41,6 +42,9 @@ async function startBot() {
   try {
     // Connect to database
     await connectToDatabase();
+    
+    // Load active reminders from database
+    await loadRemindersFromDatabase(bot);
     
     // Start the bot
     console.log("Starting bot...");
